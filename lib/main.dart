@@ -1,25 +1,23 @@
-import 'package:catalogo_web/modules/login/presentation/value_notifier_login_presenter.dart';
-import 'package:catalogo_web/modules/login/ui/login_page.dart';
-import 'package:catalogo_web/modules/login/ui/login_web.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'common/common.dart';
-import 'modules/products/core/factories/factories.dart';
+import 'modules/login/core/factories/pages/login_page_factory.dart';
 import 'service_locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-        apiKey: "AIzaSyAV1ZW7CvzbOabBP448lmo32-iswgicMgE",
-        authDomain: "parts-farm-paraguay.firebaseapp.com",
-        projectId: "parts-farm-paraguay",
-        storageBucket: "parts-farm-paraguay.appspot.com",
-        messagingSenderId: "12399255991",
-        appId: "1:12399255991:web:95558666d430555c55c832",
-        measurementId: "G-JPE5Z5F5C3"),
+      apiKey: EnvironmentVariables.apiKey,
+      authDomain: EnvironmentVariables.authDomain,
+      projectId: EnvironmentVariables.projectId,
+      storageBucket: EnvironmentVariables.storageBucket,
+      messagingSenderId: EnvironmentVariables.messagingSenderId,
+      appId: EnvironmentVariables.appId,
+      measurementId: EnvironmentVariables.measurementId,
+    ),
   );
   setUp();
   runApp(const AppRoot());
@@ -38,7 +36,7 @@ class AppRoot extends StatelessWidget {
         textTheme: GoogleFonts.openSansTextTheme(),
         primaryColor: AppColors.primaryColor,
       ),
-      home: LoginPage(presenter: ValueNotifierLoginPresenter()),
+      home: makeLoginPage(),
     );
   }
 }
