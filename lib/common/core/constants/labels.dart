@@ -1,4 +1,4 @@
-class Labels {
+abstract class Labels {
   static const String requiredField = 'Campo obrigatório';
 
   static const String emptySubcategories = 'Nenhuma subcategoria encontrada';
