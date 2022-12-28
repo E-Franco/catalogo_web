@@ -1,15 +1,46 @@
 import 'package:catalogo_web/common/ui/helpers/ui_state.dart';
+import 'package:catalogo_web/modules/login/domain/usecases/make_auth.dart';
 import 'package:catalogo_web/modules/login/ui/login_presenter.dart';
 import 'package:flutter/foundation.dart';
 
-class ValueNotifierLoginPresenter implements LoginPresenter{
+class ValueNotifierLoginPresenter implements LoginPresenter {
+  ValueNotifierLoginPresenter({
+    required this.makeAuth,
+  });
+
+  final MakeAuth makeAuth;
+
   @override
   late ValueNotifier<UIState> state;
 
   @override
-  Future<bool> auth() {
-    
-    throw UnimplementedError();
+  String? username;
+
+  @override
+  void changeUsername(String value) {
+    username = value.trim().toLowerCase();
+  }
+
+  @override
+  String? password;
+
+  @override
+  void changePassword(String value) => password = value;
+
+  @override
+  Future<bool> auth() async {
+    setState(UIState.loading);
+    final result = await makeAuth(username!, password!);
+    result.fold(
+      (l) {
+        setState(UIState.error);
+      },
+      (r) {
+        setState(UIState.success);
+      },
+    );
+
+    return result.isRight();
   }
 
   @override
@@ -22,4 +53,7 @@ class ValueNotifierLoginPresenter implements LoginPresenter{
     state = ValueNotifier<UIState>(UIState.initial);
   }
 
+  void setState(UIState newState) {
+    if (state.value != UIState.inactive) state.value = newState;
+  }
 }

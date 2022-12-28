@@ -1,10 +1,8 @@
-import 'package:catalogo_web/modules/categories/domain/entities/category_entity.dart';
-
-import 'package:catalogo_web/common/ui/helpers/ui_state.dart';
-import 'package:catalogo_web/modules/categories/domain/entities/subcategory_entity.dart';
-import 'package:catalogo_web/modules/categories/domain/usecases/subcategory/subcategory.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../../common/ui/helpers/ui_state.dart';
+import '../../domain/entities/subcategory_entity.dart';
+import '../../domain/usecases/subcategory/subcategory.dart';
 import '../../ui/pages/edit_subcategory/edit_subcategory.dart';
 
 class ValueNotifierEditSubCategoryPresenter implements EditSubCategoryPresenter {

@@ -1,36 +1,36 @@
-import 'package:catalogo_web/modules/products/core/factories/factories.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
 import '../../../common/common.dart';
+import '../../products/core/factories/factories.dart';
+import 'login_presenter.dart';
 
 class LoginPageMobile extends StatefulWidget {
-  const LoginPageMobile({super.key});
+  const LoginPageMobile({
+    super.key,
+    required this.presenter,
+  });
+
+  final LoginPresenter presenter;
 
   @override
   LoginPageMobileState createState() => LoginPageMobileState();
 }
 
 class LoginPageMobileState extends State<LoginPageMobile> {
-  late TextEditingController _usernameController;
-  late TextEditingController _passwordController;
   late GlobalKey<FormState> _formKey;
   late FocusNode _passwordFocus;
 
   @override
   void initState() {
     _formKey = GlobalKey<FormState>();
-    _usernameController = TextEditingController();
-    _passwordController = TextEditingController();
     _passwordFocus = FocusNode();
+    widget.presenter.init();
     super.initState();
   }
 
   @override
   void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
     _passwordFocus.dispose();
     super.dispose();
   }
@@ -61,8 +61,8 @@ class LoginPageMobileState extends State<LoginPageMobile> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     TextFormField(
-                      controller: _usernameController,
                       style: const TextStyle(fontSize: 20),
+                      onChanged: widget.presenter.changeUsername,
                       validator: RequiredValidator(errorText: Labels.requiredField),
                       onFieldSubmitted: (value) => FocusScope.of(context).requestFocus(_passwordFocus),
                       decoration: InputDecoration(
@@ -77,10 +77,10 @@ class LoginPageMobileState extends State<LoginPageMobile> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
-                      controller: _passwordController,
                       obscureText: true,
                       focusNode: _passwordFocus,
                       style: const TextStyle(fontSize: 20),
+                      onChanged: widget.presenter.changePassword,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderSide: BorderSide.none,
@@ -127,22 +127,20 @@ class LoginPageMobileState extends State<LoginPageMobile> {
     );
   }
 
-  Future<void> auth() async {
+  void auth() {
     if (_formKey.currentState!.validate()) {
       showDialog(context: context, builder: (_) => const LoadingDialog(msg: 'Autenticando'));
-      DocumentSnapshot doc = await FirebaseFirestore.instance.collection('auth').doc('admin').get();
-      var data = doc.data() as Map<String, dynamic>;
 
-      String user = _usernameController.text.trim().toLowerCase();
-      String password = _passwordController.text;
-
-      Navigator.of(context).pop();
-      await Future.delayed(const Duration(milliseconds: 200));
-      if (user == data['user'].toLowerCase() && password == data['password']) {
-        Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context, a, b) => makeProductsPage()));
-      } else {
-        showDialog(context: context, builder: (_) => ErrorDialog(msg: 'Usuário e/ou senha incorretos'));
-      }
+      widget.presenter.auth().whenComplete(() {
+        Navigator.of(context).pop();
+        Future.delayed(const Duration(milliseconds: 200)).whenComplete(() {
+          if (widget.presenter.state.value == UIState.success) {
+            Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context, a, b) => makeProductsPage()));
+          } else {
+            showDialog(context: context, builder: (_) => const ErrorDialog(msg: 'Usuário e/ou senha incorretos'));
+          }
+        });
+      });
     }
   }
 }

@@ -20,6 +20,7 @@ dependencies:
   google_fonts: ^3.0.1
   image_picker: ^0.8.6
   form_field_validator: ^1.1.0
+  crypto: ^3.0.2
 
 dev_dependencies:
   flutter_test:
